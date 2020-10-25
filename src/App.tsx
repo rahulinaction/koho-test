@@ -106,7 +106,7 @@ class  App extends Component<Props, State> {
       <div className="App">
         <header className="App-header">
           <h1> Copy Text or Select a file</h1>
-          { error? <p>Error</p> : null }
+          { error? <p className="error">Error</p> : null }
           { loading ?
           <Spinner animation="border" role="status">
               <span className="sr-only">Loading...</span>
