@@ -13,19 +13,20 @@ declare global {
     FileList: any
   }
 }
-interface MyEditorProps {
+interface Props {
 }
 
-interface MyState {
+interface State {
   input: string;
   content: Item [];
   loading: boolean;
+  error: string;
 }
-class  App extends Component<MyEditorProps, MyState> {
+class  App extends Component<Props, State> {
   
-  constructor(props: MyEditorProps) {
+  constructor(props: Props) {
     super(props);
-    this.state = {input: "", content: [], loading:  false };
+    this.state = {input: "", content: [], loading:  false, error: "" };
   }
 
   handleChange = (event:React.ChangeEvent<HTMLTextAreaElement> ) => {
@@ -38,33 +39,41 @@ class  App extends Component<MyEditorProps, MyState> {
     const { input } = this.state;
     const content = input.trim().split("\n");
     const self = this;
-    let output = [];
+    let records = [];
     let idArray : number[] = [];
     for(let index in content) {
       let item = JSON.parse(content[index]);
       // Handling duplicates records from front end
       if(!idArray.includes(item.id)){ 
-        output.push(item);
+        records.push(item);
         idArray.push(item.id);
       }  
     }
     
     self.setState({
       loading: true,
-      content: []
+      content: [],
+      error: ""
     });
     // Sending post request to our nodejs server to filter and retrieve data
-    axios.post('http://localhost:9000/users/userData', output )
-    .then((response) => {
-      let data = response.data;
-      self.setState({
-        content: data,
-        loading: false
+    if(records.length > 0) {
+      axios.post('http://localhost:9000/users/userData', records )
+      .then((response) => {
+        let data = response.data;
+        self.setState({
+          content: data,
+          loading: false,
+          error: ""
+        });
+      })
+      .catch( (error: Error) => {
+        self.setState({
+          error: error.message
+        });
+        console.log(error);
       });
-    })
-    .catch( (error: Error) => {
-      console.log(error);
-    });
+    }
+    
   };
 
   // Select file and paste content into textarea
@@ -92,11 +101,12 @@ class  App extends Component<MyEditorProps, MyState> {
   }
 
   render() {
-    const { input , content, loading } = this.state;
+    const { input , content, loading, error } = this.state;
     return (
       <div className="App">
         <header className="App-header">
           <h1> Copy Text or Select a file</h1>
+          { error? <p>Error</p> : null }
           { loading ?
           <Spinner animation="border" role="status">
               <span className="sr-only">Loading...</span>
@@ -107,7 +117,7 @@ class  App extends Component<MyEditorProps, MyState> {
           {this.state.input}</textarea>
           <Button
             variant="primary"
-            onClick={this.sendData}> Send Data</Button>
+            onClick={this.sendData}>Filter</Button>
           { content.length > 0 ? 
           <Table striped bordered hover variant="dark">
             <thead>
