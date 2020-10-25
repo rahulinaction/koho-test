@@ -5,6 +5,7 @@ const constants = require('./../constants');
 exports.getData = async (req, res) => {
   const content = req.body;
   //Using awaitable connection to ensure sequential execution of queries while looping
+ 
   const db = new DB().awaitableConnection();
   //Truncate table to remove any  previous content
   let output = [];
@@ -30,49 +31,48 @@ exports.getData = async (req, res) => {
     const firstDay = moment(getFirstDay(transactionDay)).format(format);
     if(amount < constants.DAILY_AMOUNT) {
 
-      try {
-        const query = "SELECT * FROM History where date between '"+firstDay+"' and '"+transactionDay+"'"+" and customerId= "+customerId;
-        let records = await db.query(query);
-        let count = records.length;
-        //Dont permit more than 3 operations
-        if(count < 3) {
-          if(count > 0) {
-            let currentDay = moment(transactionDay).format("YYYY-MM-DD");
-            let dailyAmount = amount;
-            let cumulativeAmount = amount;
-            for( let index in records) {
-              let record = records[index];
-              cumulativeAmount+= record.amount
-              if(currentDay == moment(record.date).format("YYYY-MM-DD")) {
-                dailyAmount+= record.amount;
-              }
+      
+      const query = "SELECT * FROM History where date between '"+firstDay+"' and '"+transactionDay+"'"+" and customerId= "+customerId;
+      let records = await db.query(query);
+      let count = records.length;
+      //Dont permit more than 3 operations
+      if(count < constants.COUNT_LIMIT) {
+        if(count > 0) {
+          let currentDay = moment(transactionDay).format("YYYY-MM-DD");
+          let dailyAmount = amount;
+          let cumulativeAmount = amount;
+          for( let index in records) {
+            let record = records[index];
+            cumulativeAmount+= record.amount
+            if(currentDay == moment(record.date).format("YYYY-MM-DD")) {
+              dailyAmount+= record.amount;
             }
+          }
 
-            if(cumulativeAmount < constants.WEEKLY_AMOUNT && dailyAmount < constants.DAILY_AMOUNT ) {
-              let customerQuery = "INSERT IGNORE INTO USERS (id, name) VALUES("+customerId+",'')";
-              await db.query(customerQuery);
-              //Insert record into history table
-              let recordQuery = "INSERT IGNORE INTO History (id, amount, customerId, date) VALUES("+transactionId+","+amount+","+customerId+",'"+transactionDay+"')";
-              await db.query(recordQuery);
-              outputItem.accepted = true;
-            }
-            //Fetch rows from database and add and see if new count exceeds 20000 per week or 5000 a day
-          }else {
-            //Insert into customers
-            let customerQuery = "INSERT IGNORE INTO USERS (id,name) VALUES("+customerId+",'')";
+          if(cumulativeAmount < constants.WEEKLY_AMOUNT && dailyAmount < constants.DAILY_AMOUNT ) {
+            //Inserting users and history  to store the record
+            let customerQuery = "INSERT IGNORE INTO USERS (id, name) VALUES("+customerId+",'')";
             await db.query(customerQuery);
-            let recordQuery = "INSERT IGNORE INTO History (amount,customerId,date) VALUES("+amount+","+customerId+",'"+transactionDay+"')";
+            //Insert record into history table
+            let recordQuery = "INSERT IGNORE INTO History (id, amount, customerId, date) VALUES("+transactionId+","+amount+","+customerId+",'"+transactionDay+"')";
             await db.query(recordQuery);
             outputItem.accepted = true;
           }
+          //Fetch rows from database and add and see if new count exceeds 20000 per week or 5000 a day
+        }else {
+          //Inserting users and history  to store the record
+          let customerQuery = "INSERT IGNORE INTO USERS (id,name) VALUES("+customerId+",'')";
+          await db.query(customerQuery);
+          let recordQuery = "INSERT IGNORE INTO History (amount,customerId,date) VALUES("+amount+","+customerId+",'"+transactionDay+"')";
+          await db.query(recordQuery);
+          outputItem.accepted = true;
         }
-      
-      }catch (e) {
-        console.log(e);
       }
+      
     }
     output.push(outputItem); 
-  }
+  }  
+
   res.send(output);
 };
 
