@@ -7,11 +7,15 @@ const bodyParser = require('body-parser');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const cors = require('cors');
+const DB = require('./db');
 const app = express();
-console.log('Cors called');
+
 
 // connection configurations 
 // view engine setup
+const db = new DB().awaitableConnection();
+
+app.set('db',db); 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -26,18 +30,6 @@ app.use(function (req, res, next) {
 
   // Website you wish to allow to connect
   // Pass to next layer of middleware
-
-  /*res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-
-  // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-  // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', true);*/
 
   next();
 });

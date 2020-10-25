@@ -5,8 +5,7 @@ const constants = require('./../constants');
 exports.getData = async (req, res) => {
   const content = req.body;
   //Using awaitable connection to ensure sequential execution of queries while looping
- 
-  const db = new DB().awaitableConnection();
+  const db = req.app.get('db');
   //Truncate table to remove any  previous content
   let output = [];
   const truncateQuery = "TRUNCATE History";
