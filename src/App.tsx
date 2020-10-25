@@ -53,6 +53,7 @@ class  App extends Component<MyEditorProps, MyState> {
       loading: true,
       content: []
     });
+    // Sending post request to our nodejs server to filter and retrieve data
     axios.post('http://localhost:9000/users/userData', output )
     .then((response) => {
       let data = response.data;
@@ -66,6 +67,7 @@ class  App extends Component<MyEditorProps, MyState> {
     });
   };
 
+  // Select file and paste content into textarea
   selectFile = () => {
     if (window.File && window.FileReader && window.FileList && window.Blob) {
       const file  = ((document.querySelector('input[type=file]') as HTMLInputElement).files as FileList);
@@ -75,7 +77,6 @@ class  App extends Component<MyEditorProps, MyState> {
       const textFile = /text.*/;
       if (newFile.type.match(textFile)) {
         reader.onload = (event: any) => {
-          console.log('Event target ',event.target.result);
           self.setState({
             input: event.target.result
           });    
