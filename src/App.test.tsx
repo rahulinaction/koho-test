@@ -21,7 +21,7 @@ it('should show the error if error appears', () => {
 });
 
 //Checking value gets added in input
-it('should show the error if error appears', () => {
+it('Value should get added in tesxt area', () => {
   const appComponent = shallow(<App />);
   const sampleJson = '[{"id":"15887","customer_id":"528","load_amount":"$3318.47","time":"2000-01-01T00:00:00Z"},{"id":"30081","customer_id":"154","load_amount":"$1413.18","time":"2000-01-01T01:01:22Z"},]';
   appComponent.setState({ "input": sampleJson });
