@@ -91,12 +91,17 @@ class  App extends Component<Props, State> {
           });    
         }
       } else {
-        alert('Not a file');
+        self.setState({
+          error : "Not a file"
+        });
+        //alert('Not a file');
       }
       reader.readAsText(newFile);
 
     } else {
-        alert("Your browser is too old to support HTML5 File API");
+        this.setState({
+          error : "Your browser is too old to support HTML5 File API"
+        });
     }
   }
 

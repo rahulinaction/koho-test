@@ -20,4 +20,11 @@ it('should show the error if error appears', () => {
   expect(appComponent.find('.error').exists()).toBeTruthy()
 });
 
+//Checking value gets added in input
+it('should show the error if error appears', () => {
+  const appComponent = shallow(<App />);
+  const sampleJson = '[{"id":"15887","customer_id":"528","load_amount":"$3318.47","time":"2000-01-01T00:00:00Z"},{"id":"30081","customer_id":"154","load_amount":"$1413.18","time":"2000-01-01T01:01:22Z"},]';
+  appComponent.setState({ "input": sampleJson });
+  expect(appComponent.find('textarea').props().value).toMatch(sampleJson);
+});
 
