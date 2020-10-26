@@ -12,12 +12,14 @@ c) Navigate to src/api and run npm install inside the api directory
 
 
 Once the modules have been installed we need to setup the database for the project
-Setup mysql client and start the mysql server .
+Setup mysql client and start the mysql server.
 Please follow the links https://dev.mysql.com/doc/mysql-osx-excerpt/5.7/en/osx-installation-launchd.html and 
 https://dev.mysql.com/doc/mysql-osx-excerpt/5.7/en/osx-installation.html for setting up and
-starting the mysql server
+starting the mysql server.
 
-The sql file is added in the src/db.sql . The statements  needed to be imported in the mysql db for the application 
+The sql file is added in the src/db.sql . The statements  needed to be imported in the mysql db for the application. 
+For database connection currently the credentials are stored in the api/constants.js and can be changed accordingly.
+
 
 Open a terminal and navigate to the root directory and run ``npm start``
 
