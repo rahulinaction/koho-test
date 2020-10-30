@@ -3,7 +3,7 @@ import './App.css';
 import React from 'react';
 import axios from 'axios';
 import { Item }  from './models/item';
-
+import { State } from './state/state';
 import { Button, Spinner, Table } from 'react-bootstrap';
 
 declare global {
@@ -16,17 +16,16 @@ declare global {
 interface Props {
 }
 
-interface State {
-  input: string;
-  content: Item [];
-  loading: boolean;
-  error: string;
-}
 class  App extends Component<Props, State> {
   
   constructor(props: Props) {
     super(props);
-    this.state = {input: "", content: [], loading:  false, error: "" };
+    this.state = {
+      input: "",
+      content: [],
+      loading:  false,
+      error: "" 
+    };
   }
 
   handleChange = (event:React.ChangeEvent<HTMLTextAreaElement> ) => {
