@@ -54,11 +54,14 @@ class  App extends Component<Props, State> {
       content: [],
       error: ""
     });
+
     // Sending post request to our nodejs server to filter and retrieve data
     if(records.length > 0) {
       axios.post('http://localhost:9000/users/userData', records )
       .then((response) => {
-        let data = response.data;
+        type data = Array<Item>;
+        let data =  response.data;
+        
         self.setState({
           content: data,
           loading: false,
